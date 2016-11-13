@@ -1,7 +1,4 @@
-version: '2'
-
-services:
-  postgresql:
+postgresql_service:
     image: sameersbn/postgresql:9.5-3
     environment:
         - DB_USER=redmine
@@ -10,12 +7,10 @@ services:
     #volumes:
     #    - ./redmine/postgresql:/var/lib/postgresql
 
-  redmine:
+redmine_service:
     image: sameersbn/redmine:3.2.4
-    depends_on:
-    - postgresql
-    #links:
-    #    - postgresql_service:postgresql
+    links:
+        - postgresql_service:postgresql
     environment:
         - TZ=Asia/Tokyo
 
@@ -57,9 +52,7 @@ services:
         - IMAP_PASS=password
         - IMAP_SSL=true
         - IMAP_INTERVAL=30
-
     ports:
         - "80:80"
-
     volumes:
         - ./redmine/redmine:/home/redmine/data
