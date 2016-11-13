@@ -35,7 +35,7 @@ redmine_service:
         - REDMINE_BACKUP_EXPIRY=
         - REDMINE_BACKUP_TIME=
 
-        - SMTP_ENABLED=false
+        - SMTP_ENABLED=true
         - SMTP_METHOD=smtp
         - SMTP_DOMAIN=www.feem.co.jp
         - SMTP_HOST=smtp.feem.co.jp
