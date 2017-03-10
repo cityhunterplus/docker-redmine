@@ -1,62 +1,48 @@
 version: '2'
 
 services:
-  postgresql:
-    image: sameersbn/postgresql:9.5-3
-    environment:
-      - DB_USER=redmine
-      - DB_PASS=FeemDB88!
-      - DB_NAME=redmine_production
-    #volumes:
-    #    - ./redmine/postgresql:/var/lib/postgresql
+
+  redmine-data:
+    image: busybox
+    volumes:
+      - ./redmine/log:/usr/src/redmine/log
+      - ./redmine/tmp:/usr/src/redmine/tmp
+      - ./redmine/plugins:/usr/src/redmine/plugins
+      - ./redmine/themes:/usr/src/redmine/public/themes
+      - ./redmine/files:/usr/src/redmine/files
 
   redmine:
-    image: sameersbn/redmine:3.3.1
-    depends_on:
-      - postgresql
-    environment:
-      - TZ=Asia/Tokyo
-
-      - DB_ADAPTER=postgresql
-      - DB_HOST=postgresql
-      - DB_PORT=5432
-      - DB_USER=redmine
-      - DB_PASS=FeemDB88!
-      - DB_NAME=redmine_production
-
-      - REDMINE_PORT=10083
-      - REDMINE_HTTPS=false
-      - REDMINE_RELATIVE_URL_ROOT=
-      - REDMINE_SECRET_TOKEN=
-
-      - REDMINE_SUDO_MODE_ENABLED=false
-      - REDMINE_SUDO_MODE_TIMEOUT=15
-
-      - REDMINE_CONCURRENT_UPLOADS=2
-
-      - REDMINE_BACKUP_SCHEDULE=
-      - REDMINE_BACKUP_EXPIRY=
-      - REDMINE_BACKUP_TIME=
-
-      - SMTP_ENABLED=true
-      - SMTP_METHOD=smtp
-      - SMTP_DOMAIN=feem.co.jp
-      - SMTP_HOST=smtp.feem.co.jp
-      - SMTP_PORT=587
-      - SMTP_USER=snf5703
-      - SMTP_PASS=feemredmine
-      - SMTP_STARTTLS=true
-      - SMTP_AUTHENTICATION=:login
-
-      - IMAP_ENABLED=false
-      - IMAP_HOST=imap.gmail.com
-      - IMAP_PORT=993
-      - IMAP_USER=mailer@example.com
-      - IMAP_PASS=password
-      - IMAP_SSL=true
-      - IMAP_INTERVAL=30
-
+    image: redmine
     ports:
-      - "80:80"
+      - 8804:3000
+    environment:
+      REDMINE_DB_MYSQL: mariadb
+      REDMINE_DB_PASSWORD: RedminePassword
+    #volumes:
+    #  - ./redmine/log:/usr/src/redmine/log
+    #  - ./redmine/plugins:/usr/src/redmine/plugins
+    #  - ./redmine/tmp:/usr/src/redmine/tmp
+    #  - ./redmine/themes:/usr/src/redmine/public/themes
+    volumes_from:
+      - redmine-data
+    depends_on:
+      - mariadb
+    restart: always
+
+  mariadb-data:
+    image: busybox
     volumes:
-      - ./redmine/redmine:/home/redmine/data
+      - /var/lib/mysql
+
+  mariadb:
+    image: mariadb
+    #build: Dockerfile.mariadb
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: RedminePassword
+      MYSQL_DATABASE: redmine
+    #volumes:
+    #  - ./mariadb:/var/lib/mysql
+    volumes_from:
+      - mariadb-data
+    restart: always
