@@ -12,17 +12,15 @@ services:
       - ./redmine/files:/usr/src/redmine/files
 
   redmine:
+    depends_on:
+      - redmine-data
+      - mariadb
     image: redmine
     ports:
-      - 8804:3000
+      - 3000:3000
     environment:
       REDMINE_DB_MYSQL: mariadb
       REDMINE_DB_PASSWORD: RedminePassword
-    #volumes:
-    #  - ./redmine/log:/usr/src/redmine/log
-    #  - ./redmine/plugins:/usr/src/redmine/plugins
-    #  - ./redmine/tmp:/usr/src/redmine/tmp
-    #  - ./redmine/themes:/usr/src/redmine/public/themes
     volumes_from:
       - redmine-data
     depends_on:
@@ -35,14 +33,14 @@ services:
       - /var/lib/mysql
 
   mariadb:
+    depends_on:
+      - mariadb-data
     image: mariadb
     #build: Dockerfile.mariadb
     command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: RedminePassword
       MYSQL_DATABASE: redmine
-    #volumes:
-    #  - ./mariadb:/var/lib/mysql
     volumes_from:
       - mariadb-data
     restart: always
