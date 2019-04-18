@@ -5,11 +5,11 @@ services:
   redmine-data:
     image: busybox
     volumes:
+      - ./redmine/files:/usr/src/redmine/files
       - ./redmine/log:/usr/src/redmine/log
-      - ./redmine/tmp:/usr/src/redmine/tmp
       - ./redmine/plugins:/usr/src/redmine/plugins
       - ./redmine/themes:/usr/src/redmine/public/themes
-      - ./redmine/files:/usr/src/redmine/files
+      #- ./redmine/tmp:/usr/src/redmine/tmp
 
   redmine:
     depends_on:
@@ -17,7 +17,7 @@ services:
       - mariadb
     image: redmine
     ports:
-      - 3000:3000
+      - 80:3000
     environment:
       REDMINE_DB_MYSQL: mariadb
       REDMINE_DB_PASSWORD: RedminePassword
@@ -25,7 +25,6 @@ services:
       - redmine-data
     depends_on:
       - mariadb
-    restart: always
 
   mariadb-data:
     image: busybox
@@ -43,4 +42,3 @@ services:
       MYSQL_DATABASE: redmine
     volumes_from:
       - mariadb-data
-    restart: always
