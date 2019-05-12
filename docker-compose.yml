@@ -17,7 +17,7 @@ services:
       - mariadb
     image: redmine:4.0.3
     ports:
-      - 80:3000
+      - "${WP_PORT}:3000"
     environment:
       REDMINE_DB_MYSQL: mariadb
       REDMINE_DB_PASSWORD: RedminePassword
