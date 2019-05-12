@@ -15,7 +15,7 @@ services:
     depends_on:
       - redmine-data
       - mariadb
-    image: redmine:4.0.3
+    image: redmine:3.4.10
     ports:
       - "${WP_PORT}:3000"
     environment:
